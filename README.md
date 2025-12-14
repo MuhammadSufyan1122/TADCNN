@@ -1,6 +1,6 @@
 # TADCNN for Lung cancer classification
 
-**introduction**
+# introduction
 
 Chest CT scan images hold invaluable diagnostic potential in identifying various pulmonary conditions, including malignant tumors. Our project aims to streamline the classification process of these images into four distinct classes: 'adenocarcinoma', 'large cell carcinoma', 'normal', and 'squamous cell carcinoma'. In this article we have presented texture aware deep convolutional network for lung cell classification.
 
@@ -28,6 +28,7 @@ Number/Size of Images   : Total      : 1000 (124 MB)
                           Training   : 720
                           Testing    : 180
                           Validation : 100 
+</pre>pre>
+# Workflow of Methdology
 
   
-## Preprocessing of 
