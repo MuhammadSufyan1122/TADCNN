@@ -31,4 +31,4 @@ Number/Size of Images   : Total      : 1000 (124 MB)
 </pre>pre>
 # Workflow of Methdology
 
-  
+![image](./low resolution images/Workflow diagarm.png)
