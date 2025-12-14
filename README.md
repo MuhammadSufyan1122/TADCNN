@@ -1,4 +1,4 @@
-# TADCNN for Lung cancer classification
+# TADCNN for Lung cancer classification (Due to workload we are uploading the data step by step)
 
 # introduction
 
