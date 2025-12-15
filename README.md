@@ -28,9 +28,9 @@ Number/Size of Images   : Total      : 1000 (124 MB)
                           Training   : 720
                           Testing    : 180
                           Validation : 100 
-</pre>pre>
+</pre>
 # Workflow of Methdology
 <br>
 
-<img src="images/data_prep.jpg" border="0">
+<img src="Images/Workflow.png" border="0">
 We have implemented the 
