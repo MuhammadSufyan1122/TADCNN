@@ -30,5 +30,7 @@ Number/Size of Images   : Total      : 1000 (124 MB)
                           Validation : 100 
 </pre>pre>
 # Workflow of Methdology
+<br>
 
-![image](./low resolution images/Workflow diagarm.png)
+<img src="images/data_prep.jpg" border="0">
+We have implemented the 
