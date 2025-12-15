@@ -32,5 +32,76 @@ Number/Size of Images   : Total      : 1000 (124 MB)
 # Workflow of Methdology
 <br>
 
+
+All images are resized to 224×224 pixels to standardize input shape and reduce computational cost (bilinear
+interpolation for RGB, area interpolation for CT slices). For LC25000, RGB values are converted to float32 and
+scaled to [0, 1] via division by 255. For IQ-OTH/NCCD, images are likewise scaled to [0, 1] for consistency. After
+preprocessing, the data are partitioned at the patient level into 72% training, 18% validation, and 10% test (i.e., 90%
+train/val split with an 80:20 split), using stratified sampling and a fixed random seed for reproducibility. During training
+we apply light augmentation (random horizontal/vertical flips and small rotations) to reduce overfitting. Fig. 3 presents
+a schematic overview of the proposed methodology.
+
 <img src="Images/Workflow.png" border="0">
-We have implemented the 
+</br>
+
+
+# Proposed Model
+<br>
+
+Overview of the proposed TADCNN. Left — SC-PTEM: three depthwise-separable branches with different
+receptive fields extract multiscale features. Their outputs are fed to a small gating path (concat → 1×1 conv → gating
+head → softmax) that produces per-pixel weights; the branches are reweighted and merged into a single fused feature
+map. Middle — TAAM: two attentions run in parallel—spatial attention (avg/max over channels → 1×1 conv → sigmoid)
+and channel attention (global average pooling → small MLP → sigmoid); their outputs are added to refine the features
+without changing tensor size. Right — Classification head: an optional 1×1 projection, global average pooling, and a linear
+layer with softmax produce class probabilities.
+
+
+<img src="Images/TADCNN-model.png" border="0">
+</br>
+
+# Results
+## On LC25000 Dataset
+<br>
+
+Comparison of TADCNN model with other deep learning models based on convergence in the accuracy while
+training and testing the LC25000 dataset; (a) Train accuracy curves, (b) Test accuracy curves, (c) Train loss curves,(d)
+Test loss curves
+
+<img src="Images/acc LC25000.png" border="0">
+</br>
+
+<br>
+
+Comparison of TADCNN model with other deep learning models based on the confusion matrices for the LC25000
+dataset; (a) Proposed TADCNN, (b) DenseNet121, (c) Efficient- NetV2L ,(d) Xception, (e)InceptionResNetV2, (f) VGG19,
+(g) MobileNetV2, (h) ShuffleNetV2
+
+<img src="Images/CM LC25000.png" border="0">
+</br>
+
+<br>
+Classification results showing actual vs predicted tissue types, with high confidence levels across different
+conditions: Colon-aca, Colon-n, Lung-aca, Lung-n, and Lung-scc
+
+<img src="Images/prediction LC25000.png" border="0">
+</br>
+<br>
+Examples of predictions with varying confidence scores on challenging LC25000 patches.
+
+<img src="Images/low performance LC25000.png" border="0">
+</br>
+
+## On IQ-OTH/NCCD Dataset
+
+<br>
+Comparison of TADCNN model with other deep learning models based on convergence in the accuracy while
+training and testing the IQ-OTH/NCDD dataset; (a) Train accuracy curves, (b) Test accuracy curves, (c) Train loss
+curves,(d) Test loss curves.
+
+<img src="Images/accuracy curves IQ-OTHNCDD.png" border="0">
+</br>
+
+<br>
+<img src="Images/accuracy curves IQ-OTHNCDD.png" border="0">
+</br>
