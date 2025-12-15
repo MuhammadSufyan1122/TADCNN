@@ -103,5 +103,16 @@ curves,(d) Test loss curves.
 </br>
 
 <br>
-<img src="Images/accuracy curves IQ-OTHNCDD.png" border="0">
+Comparison of the TADCNN model with other deep learning models based on the confusion matrices
+for the IQ-OTH/NCDD dataset; (a) Proposed TADCNN, (b) DenseNet121, (c) Efficient- NetV2L ,(d) Xception,
+(e)InceptionResNetV2 , (f) VGG19, (g) MobileNetV2, (h)ShuffleNetV2.
+
+<img src="Images/CM IQ-OTHNCDD.png" border="0">
+</br>
+
+<br>
+Classification results showing actual vs predicted tissue types, with high confidence levels across different
+conditions: benign, Malignant, Normal.
+
+<img src="Images/prediction on IQ-N data.png" border="0">
 </br>
