@@ -28,10 +28,8 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.applications.xception import preprocess_input as preprocess_xception
 from tensorflow.keras.applications.mobilenet import preprocess_input as preprocess_mobilenet
 from tensorflow.keras.applications.vgg19 import preprocess_input as preprocess_vgg19
-from tensorflow.keras.applications.resnet50 import preprocess_input as preprocess_resnet50
 from tensorflow.keras.applications.efficientnet import preprocess_input as preprocess_efficientnet
 from tensorflow.keras.applications.densenet import preprocess_input as preprocess_densenet
-
 from tensorflow.keras.applications.inception_resnet_v2 import preprocess_input as preprocess_inceptionRV2
 from tensorflow.keras.applications.efficientnet_v2 import preprocess_input as preprocess_EfficientNetV2L
 
@@ -46,19 +44,15 @@ def set_random_seeds(seed=42):
 set_random_seeds(42)
 
 # Path to your main data directory
-# base_dir = 'C:/Users/win10/Desktop/Sufi-416/Luna22-ISMI/processed_data/processed_data/Texture'
+base_dir = 'dataset path'
 
+img_size = (224, 224)
 
-#base_dir = 'E:/datasets/The IQ-OTHNCCD lung cancer dataset/The IQ-OTHNCCD lung cancer dataset'
-base_dir = 'E:/datasets/LC25000'
-# base_dir ='C:/Users/win10/Desktop/Sufi-416/The IQ-OTHNCCD lung cancer dataset/The IQ-OTHNCCD lung cancer dataset'
-#img_size = (224, 224)
-img_size = (200, 200)
 # Get class labels from subfolder names
 class_labels = sorted(os.listdir(base_dir))
 
-# Function to load and preprocess images (500 per class)
-def load_images_from_dir(directory, class_labels, max_per_class=561, model_variant='VGG16'):
+# Function to load and preprocess images (5000 per class)
+def load_images_from_dir(directory, class_labels, max_per_class=5000, model_variant='VGG19'):
     imgs = []
     lbls = []
     
@@ -67,8 +61,6 @@ def load_images_from_dir(directory, class_labels, max_per_class=561, model_varia
         preprocess_input = preprocess_xception
     elif model_variant == 'VGG19':
         preprocess_input = preprocess_vgg19
-    elif model_variant == 'ResNet50':
-        preprocess_input = preprocess_resnet50
     elif model_variant == 'EfficientNetB0':
         preprocess_input = preprocess_efficientnet
     elif model_variant == 'DenseNet121':
@@ -109,8 +101,8 @@ def load_images_from_dir(directory, class_labels, max_per_class=561, model_varia
     
     return np.array(imgs), np.array(lbls)
 
-# Load images (500 per class)
-images, labels = load_images_from_dir(base_dir, class_labels, max_per_class=700, model_variant='MobileNet')
+# Load images (5000 per class)
+images, labels = load_images_from_dir(base_dir, class_labels, max_per_class=5000, model_variant='MobileNet')
 
 # Encode labels
 le = LabelEncoder()
@@ -118,14 +110,15 @@ int_labels = le.fit_transform(labels)
 labels = to_categorical(int_labels, num_classes=len(class_labels))
 
 # Split data
-X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.2, random_state=42)
+X_train1, X_test1, y_train1, y_test1 = train_test_split(images, labels, test_size=0.1, random_state=42)
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X_train1, y_train1, test_size=0.18, random_state=42)
 
 # Clear session to free up GPU memory
 tf.keras.backend.clear_session()
 
 # Image Size
-#Image_Size = [224, 224]
-Image_Size = [200, 200]
+Image_Size = [224, 224]
 # Set the model variant (choose from: 'VGG16', 'VGG19', 'ResNet50', 'EfficientNetB0', 'DenseNet121')
 MODEL_VARIANT = 'MobileNet'  # Options: 'VGG16', 'VGG19', 'ResNet50', 'EfficientNetB0', 'DenseNet121'
 
@@ -204,12 +197,6 @@ model.add(base_model)
 
 # Add classification head
 model.add(GlobalAveragePooling2D())
-# model.add(Dense(256, activation='relu', kernel_regularizer=regularizers.l2(0.01)))
-# model.add(Dropout(0.5))
-# model.add(Dense(23, activation='relu', kernel_regularizer=regularizers.l2(0.01)))
-# model.add(Dense(4, activation='relu'))
-# model.add(Dropout(0.5))
-# model.add(Dropout(0.1))
 
 model.add(Dense(5, activation='softmax'))  # Assuming 5 classes for classification
 
@@ -226,7 +213,7 @@ model.compile(
 )
 
 TRAINING_EPOCHS = 50
-BATCH_SIZE = 4
+BATCH_SIZE = 16
 
 history = model.fit(X_train, y_train,
                         validation_data=(X_test, y_test),
@@ -256,54 +243,9 @@ plt.legend()
 plt.show()
 
 
-model.save('E:/research paper/LC25000 paper & results/on LC25000 dataset/SOTA models/LC25000/trained model and Epoch CSV/MobileNet.h5')
+model.save('model.h5')
 
 
-#model.save('E:/research paper/LC25000 paper & results/on IQ-OTHNCCD dataset/Trained and epoch CSV/MobileNet.h5')
-from tensorflow.keras.models import load_model
-import tensorflow as tf
-model=tf.keras.models.load_model('E:/research paper/LC25000 paper & results/Trained model/model-LC25000.h5')
-
-
-model_name=""
-# epochs=epochs
-import csv
-with open('E:/research paper/LC25000 paper & results/on LC25000 dataset/SOTA models/LC25000/trained model and Epoch CSV/MobileNet.csv', mode='a', newline='') as file:
-        writer = csv.writer(file)
-        
-        # Check if the file is empty to write the header
-        file_empty = file.tell() == 0
-        if file_empty:
-            header = ['Epoch']
-            for model_name in [model_name]:
-                header.append(f'{model_name} Train Accuracy')
-                header.append(f'{model_name} Validation Accuracy')
-                header.append(f'{model_name} Train Loss')
-                header.append(f'{model_name} Validation Loss')
-            writer.writerow(header)
-        
-        # Write the results for each epoch
-        for epoch in range(50):
-            row = [epoch + 1]  # Epoch number (1-indexed)
-            
-            # Collect the metrics for this epoch
-            train_accuracy = history.history['accuracy'][epoch]
-            val_accuracy = history.history['val_accuracy'][epoch]
-            train_loss = history.history['loss'][epoch]
-            val_loss = history.history['val_loss'][epoch]
-            
-            # Append the data to the row for the current epoch
-            row.append(train_accuracy)
-            row.append(val_accuracy)
-            row.append(train_loss)
-            row.append(val_loss)
-            
-            # Write the row of data to the file
-            writer.writerow(row)
-
-print(f"{model_name} training and validation data saved to 'models_training_and_validation_data.csv'.")
-
-print(class_labels)
 
 
 # Predict validation data
@@ -354,7 +296,6 @@ print("Confusion Matrix:")
 print(cm)
 print("Classification Report:")
 print(classification_report(y_true, y_pred))
-
 
 # Plot with seaborn
 plt.figure(figsize=(8,6))
@@ -418,7 +359,7 @@ print(f"Macro-average ROC-AUC: {roc_auc_macro:.4f}")
 import time
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.applications.vgg19 import preprocess_input
 import cv2
 
 # --- Prediction Function for FPS ---
@@ -509,9 +450,9 @@ def prepare_image(img_path, target_size=(224, 224)):
     return img_array, img_resized  # img_resized is in [0,255] RGB
 
 # Usage example:
-# img_path = 'C:/Users/win10/Desktop/Sufi-416/The IQ-OTHNCCD lung cancer dataset/The IQ-OTHNCCD lung cancer dataset/Malignant cases/Malignant case (2).jpg'  # <-- change to your test image
 
-img_path ='E:/datasets/The IQ-OTHNCCD lung cancer dataset/The IQ-OTHNCCD lung cancer dataset/Malignant cases/Malignant case (1).jpg'
+
+img_path ='image.jpg'
 avg_pred_time, fps = measure_prediction_time_and_fps(img_path, num_runs=100)
 print(f"Average prediction time per image: {avg_pred_time*1000:.2f} ms")
 print(f"Frames per second (FPS): {fps:.2f}")
@@ -588,9 +529,7 @@ from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 
 # Define class labels in the correct order
-#class_names = ["ACC", "LCC", "Normal", "SCC"]
-# class_names = ["Adenocarcinoma", "Large Cell", "Normal", "Squamous Cell"]
-class_names = ["Benign","Malignant",  "Normal"]
+class_names = [""]
 
 # Prepare the input image
 def prepare_image(img_path, target_size=(224, 224)):
@@ -618,7 +557,7 @@ def predict_and_show(img_path):
     plt.show()
 
 # # Example usage (no model reload)
-# img_path = 'E:/research paper/VGG-ConvNeXT paper/new model with good results/results/orignal images and there predictions/orignal/ACC'
+# img_path = ''
 # predict_and_show(img_path)
 
 def predict_and_show_all_images(folder_path):
@@ -630,8 +569,9 @@ def predict_and_show_all_images(folder_path):
 
 
 # === Example usage ===
-folder_path = r'E:/research paper/VGG-ConvNeXT paper/visual results comparison/orginal'
+folder_path = r''
 predict_and_show_all_images(folder_path)
+
 
 
 
