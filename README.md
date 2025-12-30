@@ -43,8 +43,62 @@ conda activate ./env
 ```bash
 pip install -r requirements.txt
 ```
-### Step 4 - Install the requirements
- for preprocessing and implementation of models follow the TADCNN-model.py and SOTA models.py files
+### Step 4 - Load dataset and Preprocessing
+ 
+
+```bash
+base_dir = 'E:/datasets/LC25000'
+img_size = (224, 224)
+
+# Get class labels from subfolder names
+class_labels = sorted(os.listdir(base_dir))
+
+# Function to load and preprocess images (500 per class)
+def load_images_from_dir(directory, class_labels, max_per_class=5000):
+    imgs = []
+    lbls = []
+    
+    for label in class_labels:
+        class_path = os.path.join(directory, label)
+        class_count = 0
+        
+        if os.path.isdir(class_path):
+            # Get list of image files in this class
+            img_files = os.listdir(class_path)
+            random.shuffle(img_files)  # Shuffle to get random samples
+            
+            for img_file in img_files:
+                if class_count >= max_per_class:
+                    break
+                    
+                img_path = os.path.join(class_path, img_file)
+                img = cv2.imread(img_path)
+                
+                if img is not None:
+                    img = cv2.resize(img, img_size)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img = preprocess_input(img.astype(np.float32))
+                    imgs.append(img)
+                    lbls.append(label)
+                    class_count += 1
+    
+    return np.array(imgs), np.array(lbls)
+
+# Load images (500 per class)
+images, labels = load_images_from_dir(base_dir, class_labels, max_per_class=5000)
+
+# Encode labels
+le = LabelEncoder()
+int_labels = le.fit_transform(labels)
+labels = to_categorical(int_labels, num_classes=len(class_labels))
+# labels = tf.one_hot (labels, depth=len(class_labels))
+print(labels.shape)
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.2, random_state=42)
+```
+
+
 
 # Workflow of Methdology
 <br>
