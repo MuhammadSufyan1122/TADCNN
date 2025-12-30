@@ -37,6 +37,56 @@ def set_random_seeds(seed=42):
 
 set_random_seeds(42)
 
+base_dir = 'E:/datasets/LC25000'
+img_size = (224, 224)
+
+# Get class labels from subfolder names
+class_labels = sorted(os.listdir(base_dir))
+
+# Function to load and preprocess images (500 per class)
+def load_images_from_dir(directory, class_labels, max_per_class=5000):
+    imgs = []
+    lbls = []
+    
+    for label in class_labels:
+        class_path = os.path.join(directory, label)
+        class_count = 0
+        
+        if os.path.isdir(class_path):
+            # Get list of image files in this class
+            img_files = os.listdir(class_path)
+            random.shuffle(img_files)  # Shuffle to get random samples
+            
+            for img_file in img_files:
+                if class_count >= max_per_class:
+                    break
+                    
+                img_path = os.path.join(class_path, img_file)
+                img = cv2.imread(img_path)
+                
+                if img is not None:
+                    img = cv2.resize(img, img_size)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img = preprocess_input(img.astype(np.float32))
+                    imgs.append(img)
+                    lbls.append(label)
+                    class_count += 1
+    
+    return np.array(imgs), np.array(lbls)
+
+# Load images (500 per class)
+images, labels = load_images_from_dir(base_dir, class_labels, max_per_class=5000)
+
+# Encode labels
+le = LabelEncoder()
+int_labels = le.fit_transform(labels)
+labels = to_categorical(int_labels, num_classes=len(class_labels))
+# labels = tf.one_hot (labels, depth=len(class_labels))
+print(labels.shape)
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.2, random_state=42)
+
 
 # ------------------------------
 # Basic DW-PW Convolution Block
@@ -128,5 +178,41 @@ def build_model(input_shape=(224, 224, 3), num_classes=5):
 model = build_model()
 model.summary()
 
+model.compile(
+    optimizer=optimizers.Adam(learning_rate=1e-5),
+    loss=losses.CategoricalCrossentropy(),
+    metrics=[metrics.CategoricalAccuracy()]
+)
+# Callbacks
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+lr_scheduler = callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-6)
 
+# Train with smaller batch size
+history = model.fit(
+    X_train, y_train,
+    batch_size=16,  # Adjust based on your GPU memory
+    validation_data=(X_test, y_test),
+    epochs=50,
+    callbacks=[lr_scheduler, early_stopping]
+    callbacks=[lr_scheduler]
+)
 
+import matplotlib.pyplot as plt
+
+# Accuracy
+plt.plot(history.history['categorical_accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_categorical_accuracy'], label='Val Accuracy')
+plt.title('Model Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+# Loss
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Val Loss')
+plt.title('Model Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
