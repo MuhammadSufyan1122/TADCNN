@@ -43,10 +43,11 @@ conda activate ./env
 ```bash
 pip install -r requirements.txt
 ```
+### Step 4 - Install the requirements
+ for preprocessing and implementation of models follow the TADCNN-model.py and SOTA models.py files
 
 # Workflow of Methdology
 <br>
-
 
 All images are resized to 224×224 pixels to standardize input shape and reduce computational cost (bilinear
 interpolation for RGB, area interpolation for CT slices). For LC25000, RGB values are converted to float32 and
