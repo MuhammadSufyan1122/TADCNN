@@ -95,8 +95,9 @@ labels = to_categorical(int_labels, num_classes=len(class_labels))
 print(labels.shape)
 
 # Split data
-X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.2, random_state=42)
-```
+X_train1, X_test1, y_train1, y_test1 = train_test_split(images, labels, test_size=0.1, random_state=42)
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X_train1, y_train1, test_size=0.18, random_state=42)
 
 
 
