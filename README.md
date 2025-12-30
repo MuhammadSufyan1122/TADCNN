@@ -29,6 +29,21 @@ Number/Size of Images   : Total      : 1000 (124 MB)
                           Testing    : 180
                           Validation : 100 
 </pre>
+
+## Installation
+The Code is written in Python 3.9.19. If you don't have Python installed you can find it here. If you are using a lower version of Python you can upgrade using the pip package, ensuring you have the latest version of pip.
+## Run Locally
+```bash
+conda create -p env python=3.9 -y
+```
+```bash
+conda activate ./env
+```
+### Step 3 - Install the requirements
+```bash
+pip install -r requirements.txt
+```
+
 # Workflow of Methdology
 <br>
 
