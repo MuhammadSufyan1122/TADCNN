@@ -1,12 +1,35 @@
-# TADCNN for Lung cancer classification 
+# Title
+**Texture-Aware Deep Convolutional Neural Network (TADCNN) for Multi-Class Lung Cancer Classification from Chest CT Images**
 
-# introduction
+---
+# Description
+This repository provides the official implementation of a **Texture-Aware Deep Convolutional Neural Network (TADCNN)** for automated lung cancer classification using chest CT scan images. The proposed model classifies CT images into **four clinically relevant categories**: *adenocarcinoma*, *large cell carcinoma*, *squamous cell carcinoma*, and *normal*. The framework emphasizes texture-aware feature extraction and attention-driven representation learning to improve diagnostic reliability.
 
-Chest CT scan images hold invaluable diagnostic potential in identifying various pulmonary conditions, including malignant tumors. Our project aims to streamline the classification process of these images into four distinct classes: 'adenocarcinoma', 'large cell carcinoma', 'normal', and 'squamous cell carcinoma'. In this article we have presented texture aware deep convolutional network for lung cell classification.
+---
 
 ## Dataset
+The primary dataset used in this study is obtained from **Kaggle**:
 
-Dataset for this Project is taken from Kaggle. Here is the Dataset [Link](https://www.kaggle.com/datasets/mohamedhanyyy/chest-ctscan-images/data).
+**Chest CT-Scan Images Dataset (LC25000)**  
+Dataset link: https://www.kaggle.com/datasets/mohamedhanyyy/chest-ctscan-images/data
+
+### Dataset Information
+- Image formats: JPG / PNG (non-DICOM)
+- Number of classes: 4  
+  - Adenocarcinoma  
+  - Large Cell Carcinoma  
+  - Squamous Cell Carcinoma  
+  - Normal  
+- Directory structure:
+  - `train/` – Training set (72%)
+  - `valid/` – Validation set (10%)
+  - `test/` – Testing set (18%)
+
+### Dataset Details
+
+
+
+Dataset for this Project is taken from Kaggle. Here is the Dataset [Link](https://www.kaggle.com/datasets/andrewmvd/lung-and-colon-cancer-histopathological-images).
 
 ## Dataset Information
 
@@ -20,15 +43,35 @@ Dataset for this Project is taken from Kaggle. Here is the Dataset [Link](https:
 * training set is 72%
 * testing set is 18%
 * validation set is 10%
-#### Dataset Details<a id='dataset-details'></a>
-<pre>
-Dataset Name            : Chest CT-Scan images Dataset (Adenocarcinoma vs Large cell carcinoma vs Squamous cell carcinoma vs Normal)
-Number of Class         : 4
-Number/Size of Images   : Total      : 1000 (124 MB)
-                          Training   : 720
-                          Testing    : 180
-                          Validation : 100 
-</pre>
+
+An additional dataset (**IQ-OTH/NCCD**) is used for cross-dataset generalization experiments, following the same preprocessing protocol.
+
+---
+
+## Code Structure
+- `TADCNN-model.py`  
+  Implements the complete TADCNN architecture, including:
+  - Multi-scale depthwise–pointwise convolution blocks
+  - Scale-aware feature fusion
+  - Texture-aware attention modules
+  - Classification head
+  - Training, validation, and evaluation pipeline
+
+- `requirements.txt`  
+  Lists all required Python dependencies.
+
+- `Images/`  
+  Contains workflow diagrams, model architecture illustrations, and experimental result visualizations.
+
+---
+
+## Installation
+The code is implemented in **Python 3.9.19**.
+
+### Environment Setup
+```bash
+conda create -p env python=3.9 -y
+conda activate ./env
 
 ## Installation
 The Code is written in Python 3.9.19. If you don't have Python installed you can find it here. If you are using a lower version of Python you can upgrade using the pip package, ensuring you have the latest version of pip.
@@ -43,8 +86,20 @@ conda activate ./env
 ```bash
 pip install -r requirements.txt
 ```
+
 ### Step 4 - Load dataset and Preprocessing
+- The preprocessing pipeline performs:  
+  
+  - Image resizing to 224 × 224
+  - RGB conversion
+  - Intensity normalization using model-specific preprocessing
+  - Label encoding and one-hot encoding
+  - Stratified dataset splitting
+
+- `All preprocessing steps are embedded within TADCNN-model.py.`  
  
+---
+
 
 ```bash
 base_dir = 'E:/datasets/LC25000'
@@ -99,23 +154,75 @@ X_train1, X_test1, y_train1, y_test1 = train_test_split(images, labels, test_siz
 # Split data
 X_train, X_test, y_train, y_test = train_test_split(X_train1, y_train1, test_size=0.18, random_state=42)
 ```
-### Step 5 - Implementation of Models
-now implement the model according to TADCNN-model.py and SOTA models.py files
-# Workflow of Methdology
+### Step 5 - Model Training and Evaluation
+```bash
+python TADCNN-model.py
+
+```
+### Reproducibility
+
+- Fixed random seed (seed = 42) is used
+
+- Complete training and evaluation pipeline is provided
+
+- Dataset source and preprocessing steps are fully documented
+
+---
+### Citation
+
+If you use this code in academic work, please cite:
+
+- The associated PeerJ Computer Science article
+
+- The original LC25000 Kaggle dataset
+---
+### License
+
+This repository is intended for academic and research use only. Please consult the LICENSE file for usage terms.
+---
+
+### Contribution Guidelines
+
+Contributions are welcome. Please ensure:
+
+- Clear documentation
+
+- Reproducible experiments
+
+- Clean and modular code structure
+
+
+If you want next, I can:
+- Write a **formal PeerJ reviewer response (point-by-point)**
+- Extract a **clean pseudocode / algorithm section** for the paper
+- Refactor `TADCNN-model.py` for **cleaner reproducibility and modularity**
+
+
+
+# Methdology
 <br>
 
-All images are resized to 224×224 pixels to standardize input shape and reduce computational cost (bilinear
-interpolation for RGB, area interpolation for CT slices). For LC25000, RGB values are converted to float32 and
-scaled to [0, 1] via division by 255. For IQ-OTH/NCCD, images are likewise scaled to [0, 1] for consistency. After
-preprocessing, the data are partitioned at the patient level into 72% training, 18% validation, and 10% test (i.e., 90%
-train/val split with an 80:20 split), using stratified sampling and a fixed random seed for reproducibility. During training
-we apply light augmentation (random horizontal/vertical flips and small rotations) to reduce overfitting. Fig. 3 presents
-a schematic overview of the proposed methodology.
+- The proposed workflow consists of:
+
+- Image resizing and normalization
+
+- Texture-aware feature extraction using multi-scale depthwise separable convolutions
+
+- Scale-conditioned feature fusion via soft gating
+
+- Parallel spatial and channel attention refinement
+
+- Global feature aggregation and classification
+
+A schematic overview of the methodology is shown in below.
+
 
 <img src="Images/Workflow.png" border="0">
 </br>
 
+## Data Preprocessing (Materials & Methods)
 
+All images are resized to 224 × 224 pixels to standardize input dimensions and reduce computational complexity. Pixel intensities are converted to float32 and normalized to the range [0, 1]. The dataset is split at the class level into 72% training, 18% testing, and 10% validation, using a fixed random seed to ensure reproducibility. During training, light data augmentation (random flips and rotations) is applied to mitigate overfitting.
 # Proposed Model
 <br>
 
