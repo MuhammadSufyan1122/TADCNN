@@ -40,9 +40,9 @@ Dataset for this Project is taken from Kaggle. Here is the Dataset [Link](https:
 * test represent testing set
 * train represent training set
 * valid represent validation set
-* training set is 72%
-* testing set is 18%
-* validation set is 10%
+* training set is 60%
+* testing set is 20%
+* validation set is 20%
 
 An additional dataset (**IQ-OTH/NCCD**) is used for cross-dataset generalization experiments, following the same preprocessing protocol.
 
@@ -132,6 +132,7 @@ def load_images_from_dir(directory, class_labels, max_per_class=5000):
                 if img is not None:
                     img = cv2.resize(img, img_size)
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img_array = img_to_array(img) / 255.0
                     img = preprocess_input(img.astype(np.float32))
                     imgs.append(img)
                     lbls.append(label)
@@ -217,7 +218,7 @@ If you want next, I can:
 A schematic overview of the methodology is shown in below.
 
 
-<img src="Images/Workflow.png" border="0">
+<img src="Images/Workflow diagarm.png" border="0">
 </br>
 
 ## Data Preprocessing (Materials & Methods)
