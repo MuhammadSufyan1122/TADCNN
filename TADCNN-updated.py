@@ -212,7 +212,18 @@ model.compile(
 # Callbacks
 early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 lr_scheduler = callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-6)
-
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+# Data augmentation
+datagen = ImageDataGenerator(
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest',
+    preprocessing_function=preprocess_input  # Apply VGG16 preprocessing
+)
 # Train with smaller batch size
 history = model.fit(
     X_train1, y_train1,
@@ -242,3 +253,4 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
 plt.show()
+
