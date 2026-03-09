@@ -21,9 +21,9 @@ Dataset link: https://www.kaggle.com/datasets/mohamedhanyyy/chest-ctscan-images/
   - Squamous Cell Carcinoma  
   - Normal  
 - Directory structure:
-  - `train/` – Training set (72%)
-  - `valid/` – Validation set (10%)
-  - `test/` – Testing set (18%)
+  - `train/` – Training set (60%)
+  - `valid/` – Validation set (20%)
+  - `test/` – Testing set (20%)
 
 ### Dataset Details
 
