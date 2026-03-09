@@ -67,6 +67,7 @@ def load_images_from_dir(directory, class_labels, max_per_class=5000):
                 if img is not None:
                     img = cv2.resize(img, img_size)
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img_array = img_to_array(img) / 255.0
                     img = preprocess_input(img.astype(np.float32))
                     imgs.append(img)
                     lbls.append(label)
@@ -87,9 +88,9 @@ print(labels.shape)
 
 
 # Split data
-X_train1, X_test1, y_train1, y_test1 = train_test_split(images, labels, test_size=0.1, random_state=42)
+X_train1, X_test1, y_train1, y_test1 = train_test_split(images, labels, test_size=0.2, random_state=42)
 # Split data
-X_train, X_test, y_train, y_test = train_test_split(X_train1, y_train1, test_size=0.18, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_train1, y_train1, test_size=0.2, random_state=42)
 
 # ------------------------------
 # Basic DW-PW Convolution Block
@@ -192,7 +193,7 @@ lr_scheduler = callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patie
 
 # Train with smaller batch size
 history = model.fit(
-    X_train, y_train,
+    X_train1, y_train1,
     batch_size=16,  # Adjust based on your GPU memory
     validation_data=(X_test, y_test),
     epochs=50,
@@ -219,4 +220,5 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
 plt.show()
+
 
